@@ -1,1 +1,1 @@
-# feedback-next
+# Feedback app in NextJs
