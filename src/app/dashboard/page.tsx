@@ -1,8 +1,10 @@
 'use client';
 
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import QRCodeGenerator from '@/components/QRCodeGenerator';
 
 interface Message {
     _id: string;
@@ -12,14 +14,17 @@ interface Message {
 
 export default function Dashboard() {
     const { user, loading, signOut } = useAuth();
+    const { theme, toggleTheme } = useTheme();
     const [messages, setMessages] = useState<Message[]>([]);
     const [isLoadingMessages, setIsLoadingMessages] = useState(true);
     const [isAccepting, setIsAccepting] = useState(false);
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [showQRCode, setShowQRCode] = useState(false);
     
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (typeof window !== 'undefined' ? window.location.origin : '');
+    const messageUrl = `${baseUrl}/send-message/${user?.username}`;
 
     useEffect(() => {
         if (user) {
@@ -39,11 +44,24 @@ export default function Dashboard() {
         try {
             await fetchMessages();
             showToastMessage('Messages refreshed!');
-        } catch (error) {
+        } catch {
             showToastMessage('Failed to refresh messages');
         } finally {
             setIsRefreshing(false);
         }
+    };
+
+    // Analytics calculations
+    const getMessagesThisWeek = () => {
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        return messages.filter(msg => new Date(msg.createdAt) >= weekAgo).length;
+    };
+
+    const getMessagesThisMonth = () => {
+        const monthAgo = new Date();
+        monthAgo.setMonth(monthAgo.getMonth() - 1);
+        return messages.filter(msg => new Date(msg.createdAt) >= monthAgo).length;
     };
 
     const fetchMessages = async () => {
@@ -132,21 +150,38 @@ export default function Dashboard() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
             {/* Header */}
-            <header className="bg-white shadow">
+            <header className="bg-white dark:bg-gray-800 shadow transition-colors duration-300">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center py-6">
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-                            <p className="text-gray-600">Welcome back, {user.username}!</p>
+                            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+                            <p className="text-gray-600 dark:text-gray-300">Welcome back, {user.username}!</p>
                         </div>
-                        <button
-                            onClick={signOut}
-                            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
-                        >
-                            Sign Out
-                        </button>
+                        <div className="flex items-center gap-4">
+                            <button
+                                onClick={toggleTheme}
+                                className="p-2 rounded-lg bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+                                title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+                            >
+                                {theme === 'light' ? (
+                                    <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                                    </svg>
+                                ) : (
+                                    <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                                    </svg>
+                                )}
+                            </button>
+                            <button
+                                onClick={signOut}
+                                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                            >
+                                Sign Out
+                            </button>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -155,21 +190,21 @@ export default function Dashboard() {
                 <div className="px-4 py-6 sm:px-0">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         {/* Stats Cards */}
-                        <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                            <div className="bg-white overflow-hidden shadow rounded-lg">
+                        <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                            <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg transition-colors duration-300">
                                 <div className="p-5">
                                     <div className="flex items-center">
                                         <div className="flex-shrink-0">
                                             <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
-                                                <span className="text-white font-bold">{messages.length}</span>
+                                                <span className="text-white font-bold text-sm">{messages.length}</span>
                                             </div>
                                         </div>
                                         <div className="ml-5 w-0 flex-1">
                                             <dl>
-                                                <dt className="text-sm font-medium text-gray-500 truncate">
+                                                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
                                                     Total Messages
                                                 </dt>
-                                                <dd className="text-lg font-medium text-gray-900">
+                                                <dd className="text-lg font-medium text-gray-900 dark:text-white">
                                                     {messages.length}
                                                 </dd>
                                             </dl>
@@ -178,7 +213,51 @@ export default function Dashboard() {
                                 </div>
                             </div>
 
-                            <div className="bg-white overflow-hidden shadow rounded-lg">
+                            <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg transition-colors duration-300">
+                                <div className="p-5">
+                                    <div className="flex items-center">
+                                        <div className="flex-shrink-0">
+                                            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                                                <span className="text-white font-bold text-sm">{getMessagesThisWeek()}</span>
+                                            </div>
+                                        </div>
+                                        <div className="ml-5 w-0 flex-1">
+                                            <dl>
+                                                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                                                    This Week
+                                                </dt>
+                                                <dd className="text-lg font-medium text-gray-900 dark:text-white">
+                                                    {getMessagesThisWeek()}
+                                                </dd>
+                                            </dl>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg transition-colors duration-300">
+                                <div className="p-5">
+                                    <div className="flex items-center">
+                                        <div className="flex-shrink-0">
+                                            <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                                                <span className="text-white font-bold text-sm">{getMessagesThisMonth()}</span>
+                                            </div>
+                                        </div>
+                                        <div className="ml-5 w-0 flex-1">
+                                            <dl>
+                                                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                                                    This Month
+                                                </dt>
+                                                <dd className="text-lg font-medium text-gray-900 dark:text-white">
+                                                    {getMessagesThisMonth()}
+                                                </dd>
+                                            </dl>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg transition-colors duration-300">
                                 <div className="p-5">
                                     <div className="flex items-center">
                                         <div className="flex-shrink-0">
@@ -192,63 +271,14 @@ export default function Dashboard() {
                                         </div>
                                         <div className="ml-5 w-0 flex-1">
                                             <dl>
-                                                <dt className="text-sm font-medium text-gray-500 truncate">
+                                                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
                                                     Status
                                                 </dt>
-                                                <dd className="text-lg font-medium text-gray-900">
-                                                    {isAccepting ? 'Accepting' : 'Not Accepting'}
+                                                <dd className="text-lg font-medium text-gray-900 dark:text-white">
+                                                    {isAccepting ? 'Active' : 'Inactive'}
                                                 </dd>
                                             </dl>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="bg-white overflow-hidden shadow rounded-lg">
-                                <div className="p-5">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center min-w-0 flex-1">
-                                            <div className="flex-shrink-0">
-                                                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                                                    <span className="text-white text-xs">@</span>
-                                                </div>
-                                            </div>
-                                            <div className="ml-5 min-w-0 flex-1">
-                                                <dl>
-                                                    <dt className="text-sm font-medium text-gray-500 truncate">
-                                                        Your Message Link
-                                                    </dt>
-                                                    <dd className="text-sm font-medium text-blue-600 truncate">
-                                                        <a 
-                                                            href={`${baseUrl}/send-message/${user.username}`}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="hover:text-blue-800"
-                                                        >
-                                                            {baseUrl}/send-message/{user.username}
-                                                        </a>
-                                                    </dd>
-                                                </dl>
-                                            </div>
-                                        </div>
-                                        <button
-                                            onClick={async () => {
-                                                const url = `${baseUrl}/send-message/${user.username}`;
-                                                try {
-                                                    await navigator.clipboard.writeText(url);
-                                                    showToastMessage('Link copied to clipboard!');
-                                                } catch (err) {
-                                                    console.error('Failed to copy link:', err);
-                                                    showToastMessage('Failed to copy link');
-                                                }
-                                            }}
-                                            className="ml-4 bg-blue-600 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-700 transition-colors flex items-center gap-1"
-                                        >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                            </svg>
-                                            Copy
-                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -300,6 +330,15 @@ export default function Dashboard() {
                                             </svg>
                                             Open Link
                                         </a>
+                                        <button
+                                            onClick={() => setShowQRCode(true)}
+                                            className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm hover:bg-indigo-700 transition-colors flex items-center gap-2"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 16h4.01M16 12h4.01M12 8h4.01M16 8h4.01M8 12h.01M8 16h.01" />
+                                            </svg>
+                                            QR Code
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -399,6 +438,31 @@ export default function Dashboard() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
                         {toastMessage}
+                    </div>
+                </div>
+            )}
+
+            {/* QR Code Modal */}
+            {showQRCode && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Share QR Code</h3>
+                            <button
+                                onClick={() => setShowQRCode(false)}
+                                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                            >
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div className="text-center">
+                            <p className="text-gray-600 dark:text-gray-300 mb-4">
+                                Scan this QR code to access your feedback link
+                            </p>
+                            <QRCodeGenerator url={messageUrl} />
+                        </div>
                     </div>
                 </div>
             )}

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function TestAuth() {
-    const [testResult, setTestResult] = useState<any>(null);
+    const [testResult, setTestResult] = useState<Record<string, unknown> | null>(null);
     const { user, loading, refreshUser } = useAuth();
 
     const testCookies = async () => {
