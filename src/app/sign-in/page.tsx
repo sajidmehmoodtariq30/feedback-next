@@ -92,16 +92,16 @@ export default function SignIn() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-500 to-red-500 flex items-center justify-center p-4">
-            <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
+            <div className="card p-8 w-full max-w-md hover-lift animate-fade-in">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-                    <p className="text-gray-600">Sign in to your account</p>
+                    <h1 className="text-3xl font-bold text-foreground mb-2">Welcome Back</h1>
+                    <p className="text-muted-foreground">Sign in to your account</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                        <label htmlFor="identifier" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="identifier" className="block text-sm font-medium text-foreground mb-2">
                             Email or Username
                         </label>
                         <input
@@ -110,18 +110,18 @@ export default function SignIn() {
                             name="identifier"
                             value={formData.identifier}
                             onChange={handleChange}
-                            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${
-                                errors.identifier ? 'border-red-500' : 'border-gray-300'
+                            className={`w-full px-4 py-3 bg-input border-2 border-border rounded-xl focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary transition-all duration-300 ${
+                                errors.identifier ? 'border-destructive focus:border-destructive' : ''
                             }`}
                             placeholder="Enter your email or username"
                         />
                         {errors.identifier && (
-                            <p className="mt-1 text-sm text-red-600">{errors.identifier}</p>
+                            <p className="mt-2 text-sm text-destructive animate-fade-in">{errors.identifier}</p>
                         )}
                     </div>
 
                     <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
                             Password
                         </label>
                         <input
@@ -130,19 +130,19 @@ export default function SignIn() {
                             name="password"
                             value={formData.password}
                             onChange={handleChange}
-                            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${
-                                errors.password ? 'border-red-500' : 'border-gray-300'
+                            className={`w-full px-4 py-3 bg-input border-2 border-border rounded-xl focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary transition-all duration-300 ${
+                                errors.password ? 'border-destructive focus:border-destructive' : ''
                             }`}
                             placeholder="Enter your password"
                         />
                         {errors.password && (
-                            <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+                            <p className="mt-2 text-sm text-destructive animate-fade-in">{errors.password}</p>
                         )}
                     </div>
 
                     {message && (
-                        <div className={`p-3 rounded-lg text-sm ${
-                            message.includes('successful') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                        <div className={`p-4 rounded-xl text-sm animate-fade-in ${
+                            message.includes('successful') ? 'bg-success/10 text-success border border-success/20' : 'bg-destructive/10 text-destructive border border-destructive/20'
                         }`}>
                             {message}
                         </div>
@@ -151,23 +151,23 @@ export default function SignIn() {
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="btn-primary w-full py-3 px-4 rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
                     >
                         {isLoading ? 'Signing In...' : 'Sign In'}
                     </button>
                 </form>
 
                 <div className="mt-6 text-center">
-                    <p className="text-gray-600">
+                    <p className="text-muted-foreground">
                         Don&apos;t have an account?{' '}
-                        <Link href="/sign-up" className="text-purple-600 hover:text-purple-700 font-medium">
+                        <Link href="/sign-up" className="text-primary hover:text-primary/80 font-medium transition-colors">
                             Create one
                         </Link>
                     </p>
                 </div>
 
                 <div className="mt-4 text-center">
-                    <Link href="/" className="text-gray-500 hover:text-gray-700 text-sm">
+                    <Link href="/" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
                         ← Back to home
                     </Link>
                 </div>

@@ -100,11 +100,11 @@ export default function SignUp() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-500 to-red-500 flex items-center justify-center p-4">
-            <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
+            <div className="card p-8 w-full max-w-md hover-lift animate-fade-in">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
-                    <p className="text-gray-600">Join the anonymous feedback community</p>
+                    <h1 className="text-3xl font-bold text-foreground mb-2">Create Account</h1>
+                    <p className="text-muted-foreground">Join the anonymous feedback community</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">

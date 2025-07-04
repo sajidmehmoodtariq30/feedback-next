@@ -1,33 +1,33 @@
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-500 to-red-500">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-16">
-        <div className="text-center text-white">
-          <h1 className="text-6xl font-bold mb-6">
+        <div className="text-center animate-fade-in">
+          <h1 className="text-6xl font-bold mb-6 text-foreground">
             Anonymous Feedback
           </h1>
-          <p className="text-xl mb-8 max-w-2xl mx-auto">
+          <p className="text-xl mb-8 max-w-2xl mx-auto text-muted-foreground">
             Share your thoughts freely. Receive honest feedback anonymously. 
             Create a safe space for authentic communication.
           </p>
           <div className="space-y-4 sm:space-y-0 sm:space-x-4 sm:flex sm:justify-center">
             <a
               href="/sign-up"
-              className="inline-block bg-white text-purple-600 font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors"
+              className="btn-primary inline-block font-semibold px-8 py-3 rounded-xl hover-lift transition-all duration-300"
             >
               Get Started
             </a>
             <a
               href="/sign-in"
-              className="inline-block border-2 border-white text-white font-semibold px-8 py-3 rounded-lg hover:bg-white hover:text-purple-600 transition-colors"
+              className="btn-secondary inline-block border-2 font-semibold px-8 py-3 rounded-xl hover-lift transition-all duration-300"
             >
               Sign In
             </a>
           </div>
         </div>
 
-        <div className="mt-16 grid md:grid-cols-3 gap-8 text-white">
-          <div className="text-center">
+        <div className="mt-16 grid md:grid-cols-3 gap-8 text-foreground">
+          <div className="text-center animate-fade-in" style={{ animationDelay: '0.2s' }}>
             <div className="bg-white/10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z" clipRule="evenodd" />
