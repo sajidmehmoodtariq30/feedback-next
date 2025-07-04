@@ -23,8 +23,8 @@ export interface User extends Document {
     verificationCode: string;
     expiryDate: Date;
     password: string;
-    isAccepting: Boolean;
-    isVerified: Boolean;
+    isAccepting: boolean;
+    isVerified: boolean;
     messages: Message[];
 }
 

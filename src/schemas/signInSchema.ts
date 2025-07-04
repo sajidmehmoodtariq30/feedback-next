@@ -11,6 +11,6 @@ export const singInSchema = z.object({
         .min(6, { message: 'Password must be at least 6 characters long' })
         .max(100, { message: 'Password must not exceed 100 characters' })
         .trim()
-        .regex(/^[a-zA-Z0-9!@#$%^&*().]+$ /, { message: 'Password can only contain alphanumeric characters and special symbols !@#$%^&*()' }),
+        .regex(/^[a-zA-Z0-9!@#$%^&*().]+$/, { message: 'Password can only contain alphanumeric characters and special symbols !@#$%^&*()' }),
     rememberMe: z.boolean().optional()
 })

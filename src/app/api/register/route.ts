@@ -22,7 +22,7 @@ export async function POST(request: Request) {
             }, { status: 400 });
         }
         const existingUserbyEmail = await UserModel.findOne({ email });
-        const otp = Math.random().toString(36).substring(2, 15);
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString(); // 6 digit numeric code
         if (existingUserbyEmail) {
             if (existingUserbyEmail.isVerified) {
                 return Response.json({
@@ -30,11 +30,11 @@ export async function POST(request: Request) {
                     success: false
                 }, { status: 400 });
             }
-            // Update existing user with new OTP and expiry date
+            // Update existing user with new verification code and expiry date
             else{
                 const hashedPassword = await bcrypt.hash(password,10);
                 existingUserbyEmail.password = hashedPassword;
-                existingUserbyEmail.verificationCode = otp;
+                existingUserbyEmail.verificationCode = verificationCode;
                 existingUserbyEmail.expiryDate = new Date(Date.now() + 3600000);
                 await existingUserbyEmail.save();
             }
@@ -46,8 +46,8 @@ export async function POST(request: Request) {
             const newUser = new UserModel({
                 username,
                 email,
-                otp,
-                expiryCode: expiryDate,
+                verificationCode,
+                expiryDate: expiryDate,
                 password: hashedPassword,
                 isAccepting: true,
                 isVerified: false,
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
             await newUser.save();
         }
         // Send verification email
-        const emailResponse = await sendVerificationEmail(email, username, otp);
+        const emailResponse = await sendVerificationEmail(email, username, verificationCode);
 
         if (!emailResponse.success) {
             return Response.json({
