@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import AIMessageAssistant from '@/components/AIMessageAssistant';
 
 export default function SendMessage() {
     const params = useParams();
@@ -19,6 +20,19 @@ export default function SendMessage() {
         if (value.length <= MAX_LENGTH) {
             setMessage(value);
             setMessageLength(value.length);
+        }
+    };
+
+    const handleAIMessageUpdate = (newMessage: string) => {
+        if (newMessage.length <= MAX_LENGTH) {
+            setMessage(newMessage);
+            setMessageLength(newMessage.length);
+        } else {
+            // Truncate if too long
+            const truncated = newMessage.substring(0, MAX_LENGTH);
+            setMessage(truncated);
+            setMessageLength(MAX_LENGTH);
+            setFeedback('Message was truncated to fit the character limit');
         }
     };
 
@@ -105,6 +119,13 @@ export default function SendMessage() {
                                         {messageLength}/{MAX_LENGTH}
                                     </p>
                                 </div>
+
+                                {/* AI Assistant */}
+                                <AIMessageAssistant
+                                    message={message}
+                                    onMessageUpdate={handleAIMessageUpdate}
+                                    disabled={isLoading}
+                                />
                             </div>
 
                             {feedback && (
@@ -125,10 +146,11 @@ export default function SendMessage() {
                         </form>
 
                         <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-                            <h3 className="text-sm font-medium text-blue-900 mb-2">Privacy Notice</h3>
+                            <h3 className="text-sm font-medium text-blue-900 mb-2">Privacy & AI Notice</h3>
                             <ul className="text-xs text-blue-800 space-y-1">
                                 <li>• Your message will be sent anonymously</li>
                                 <li>• We do not store any identifying information about you</li>
+                                <li>• AI assistance is optional and helps improve message clarity</li>
                                 <li>• Please be respectful and constructive in your feedback</li>
                                 <li>• Harmful or inappropriate messages may be reported</li>
                             </ul>
