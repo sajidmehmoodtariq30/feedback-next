@@ -9,6 +9,16 @@ export async function sendVerificationEmail(
     otp: string
 ) : Promise<ApiResponse>{
     try {
+        // Check if email credentials are configured
+        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+            console.error("Email credentials not configured");
+            return {
+                status: 500,
+                message: "Email service not configured",
+                success: false
+            };
+        }
+
         // Render the React email component to HTML
         const emailHtml = await renderEmailToHtml(VerificationEmail({
             username: username,
