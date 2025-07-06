@@ -1,6 +1,7 @@
-import { resend } from "@/lib/resend";
+import { transporter } from "@/lib/nodemailer";
 import VerificationEmail from "../../email/verification";
 import { ApiResponse } from "@/types/apiResponse";
+import { renderEmailToHtml } from "./renderEmailToHtml";
 
 export async function sendVerificationEmail(
     email: string,
@@ -8,15 +9,20 @@ export async function sendVerificationEmail(
     otp: string
 ) : Promise<ApiResponse>{
     try {
-        await resend.emails.send({
-            from: "Acme <onboarding@resend.dev>",
+        // Render the React email component to HTML
+        const emailHtml = await renderEmailToHtml(VerificationEmail({
+            username: username,
+            otp: otp
+        }));
+
+        // Send email using nodemailer
+        await transporter.sendMail({
+            from: process.env.EMAIL_FROM || `"${process.env.APP_NAME || 'Your App'}" <${process.env.EMAIL_USER}>`,
             to: email,
             subject: "Verify your email address",
-            react: VerificationEmail({
-                username: username,
-                otp: otp
-            }),
-        })
+            html: emailHtml,
+        });
+
         return { success: true, status: 200, message: "Verification email sent successfully" };
     } catch (error) {
         console.error("Error sending verification email:", error);
